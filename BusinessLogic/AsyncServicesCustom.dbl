@@ -1,0 +1,113 @@
+
+import System
+import System.Collections.Generic
+import System.Threading
+import System.Threading.Tasks
+import System.Windows.Threading
+
+namespace BusinessLogic
+	
+	;;; <summary>
+	;;; This class exposes async wrappers for hand-crafted methods to the client
+	;;; application. Notice that this is a PARTIAL class, so the methods are added
+	;;; to the main AsyncServices class defined in AsyncServices.dbl.
+	;;; </summary>
+	public partial class AsyncServices
+		
+		.region "Login and session management"
+		
+		;;; <summary>
+		;;; Log a user in
+		;;; </summary>
+		public method Login, @Task<Tuple<String, MethodStatus>>
+			required in userName, String
+			required in password, String
+			endparams
+		proc
+			data completionSource = new TaskCompletionSource<Tuple<String, MethodStatus>>()
+			lambda curryParams()
+			begin
+				data message, String
+				data result = mServices.Login(userName, password, message)
+				completionSource.SetResult(Tuple.Create(message,result))
+			end
+			mBackgroundDispatcher.Dispatch(curryParams)
+			mreturn completionSource.Task
+		endmethod
+		
+		.endregion
+		
+		.region "Channel tests"
+		
+		;;; <summary>
+		;;; Test method to retrieve a collection of currently open channels.
+		;;; </summary>
+		public method GetOpenChannels, @Task<List<String>>
+			endparams
+		proc
+			data completionSource = new TaskCompletionSource<Task<List<String>>>()
+			lambda curryParams()
+			begin
+				completionSource.SetResult(mServices.GetOpenChannels())
+			end
+			mBackgroundDispatcher.Dispatch(curryParams)
+			mreturn completionSource.Task
+		endmethod
+		
+		;;; <summary>
+		;;; Test method to open a channel.
+		;;; </summary>
+		public method OpenChannel, @Task<MethodStatus>
+			endparams
+		proc
+			data completionSource = new TaskCompletionSource<Task<MethodStatus>>()
+			lambda curryParams()
+			begin
+				completionSource.SetResult(mServices.OpenChannel())
+			end
+			mBackgroundDispatcher.Dispatch(curryParams)
+			mreturn completionSource.Task
+		endmethod
+		
+		;;; <summary>
+		;;; Test method to close all currently open channels.
+		;;; </summary>
+		public method CloseAllChannels, @Task<MethodStatus>
+			endparams
+		proc
+			data completionSource = new TaskCompletionSource<Task<MethodStatus>>()
+			lambda curryParams()
+			begin
+				completionSource.SetResult(mServices.CloseAllChannels())
+			end
+			mBackgroundDispatcher.Dispatch(curryParams)
+			mreturn completionSource.Task
+		endmethod
+		
+		.endregion
+		
+		.region "Custom methods"
+		;;; <summary>
+		;;; Read all Part records (async)
+		;;; </summary>
+		;;; <returns></returns>
+		public method GetProductGroupParts, @Task<Tuple<MethodStatus,List<Part>>>
+			required in productGroupId, String
+			endparams
+		proc
+			data completionSource, @TaskCompletionSource<Tuple<MethodStatus,List<Part>>>, new TaskCompletionSource<Tuple<MethodStatus,List<Part>>>()
+			lambda curryParams()
+			begin
+				data parts, @List<Part>
+				data result, MethodStatus, mServices.GetProductGroupParts(productGroupId,parts)
+				completionSource.SetResult(Tuple.Create(result,parts))
+			end
+			mBackgroundDispatcher.Dispatch(curryParams)
+			mreturn completionSource.Task
+		endmethod
+		
+		.endregion
+
+	endclass
+	
+endnamespace

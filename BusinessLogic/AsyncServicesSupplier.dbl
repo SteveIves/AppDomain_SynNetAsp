@@ -1,0 +1,142 @@
+;;******************************************************************************
+;;WARNING: This file was created by CodeGen. Changes will be lost if regenerated
+;;******************************************************************************
+
+import System
+import System.Collections.Generic
+import System.Threading
+import System.Threading.Tasks
+import System.Windows.Threading
+import Synergex.SynergyDE.Select
+
+namespace BusinessLogic
+
+    ;;; <summary>
+    ;;; This class exposes ASYNCHRONOUS wrappers for the CRUD methods for Supplier
+    ;;; to the client application. Notice that this is a PARTIAL class, so the
+    ;;; methods are added to the main AsyncServices class defined in AsyncServices.dbl.
+    ;;; </summary>
+    public partial class AsyncServices
+
+        ;;; <summary>
+        ;;; Creare a new Supplier record (async)
+        ;;; </summary>
+        ;;; <param name="aSupplier">Passed Supplier object (@Supplier)</param>
+        ;;; <returns></returns>
+        public method CreateSupplier, @Task<MethodStatus>
+            required in aSupplier, @Supplier
+            endparams
+        proc
+            data completionSource, @TaskCompletionSource<MethodStatus>, new TaskCompletionSource<MethodStatus>()
+            lambda curryParams()
+            begin
+                data result = mServices.CreateSupplier(aSupplier)
+                completionSource.SetResult(result)
+            end
+            mBackgroundDispatcher.Dispatch(curryParams)
+            mreturn completionSource.Task
+        endmethod
+
+        ;;; <summary>
+        ;;; Read all Supplier records (async)
+        ;;; </summary>
+        ;;; <returns></returns>
+        public method ReadAllSuppliers, @Task<Tuple<MethodStatus,List<Supplier>>>
+            endparams
+        proc
+            data completionSource, @TaskCompletionSource<Tuple<MethodStatus,List<Supplier>>>, new TaskCompletionSource<Tuple<MethodStatus,List<Supplier>>>()
+            lambda curryParams()
+            begin
+                data aData, @List<Supplier>
+                data result, MethodStatus, mServices.ReadAllSuppliers(aData)
+                completionSource.SetResult(Tuple.Create(result,aData))
+            end
+            mBackgroundDispatcher.Dispatch(curryParams)
+            mreturn completionSource.Task
+        endmethod
+
+        ;;; <summary>
+        ;;; Read a Supplier record by primary key (SUPPLIER_ID: primary access key) (async)
+        ;;; </summary>
+        ;;; <param name="aSupplierId">Passed supplier id (String)</param>
+        ;;; <returns></returns>
+        public method ReadSupplier, @Task<Tuple<MethodStatus,Supplier,String>>
+            required in  aSupplierId, String
+            endparams
+        proc
+            data completionSource, @TaskCompletionSource<Tuple<MethodStatus,Supplier,String>>, new TaskCompletionSource<Tuple<MethodStatus,Supplier,String>>()
+            lambda curryParams()
+            begin
+                data theSupplier, @Supplier
+                data aGrfa, String
+                data result, MethodStatus, mServices.ReadSupplier(aSupplierId,theSupplier,aGrfa)
+                completionSource.SetResult(Tuple.Create(result,theSupplier,aGrfa))
+            end
+            mBackgroundDispatcher.Dispatch(curryParams)
+            mreturn completionSource.Task
+        endmethod
+
+        ;;; <summary>
+        ;;; Update a Supplier record (async)
+        ;;; </summary>
+        ;;; <param name="aSupplier">Passed/returned Supplier object (@Supplier)</param>
+        ;;; <param name="aGrfa">Passed/returned GRFA (string)</param>
+        ;;; <returns></returns>
+        public method UpdateSupplier, @Task<Tuple<MethodStatus,Supplier,String>>
+            required in aSupplier, @Supplier
+            required in aGrfa, String
+            endparams
+        proc
+            data completionSource, @TaskCompletionSource<Tuple<MethodStatus,Supplier,String>>, new TaskCompletionSource<Tuple<MethodStatus,Supplier,String>>()
+            data tmpData, @Supplier, aSupplier
+            data tmpGrfa, String, aGrfa
+            lambda curryParams()
+            begin
+                data result, MethodStatus, mServices.UpdateSupplier(tmpData,tmpGrfa)
+                completionSource.SetResult(Tuple.Create(result,tmpData,tmpGrfa))
+            end
+            mBackgroundDispatcher.Dispatch(curryParams)
+            mreturn completionSource.Task
+        endmethod
+
+        ;;; <summary>
+        ;;; Delete a Supplier record (async)
+        ;;; </summary>
+        ;;; <param name="aGrfa">Passed GRFA (string)</param>
+        ;;; <returns></returns>
+        public method DeleteSupplier, @Task<MethodStatus>
+            required in aGrfa, String
+            endparams
+        proc
+            data completionSource, @TaskCompletionSource<MethodStatus>, new TaskCompletionSource<MethodStatus>()
+            lambda curryParams()
+            begin
+                data result, MethodStatus, mServices.DeleteSupplier(aGrfa)
+                completionSource.SetResult(result)
+            end
+            mBackgroundDispatcher.Dispatch(curryParams)
+            mreturn completionSource.Task
+        endmethod
+
+        ;;; <summary>
+        ;;; Determine if a Supplier record exists (async)
+        ;;; </summary>
+        ;;; <param name="SupplierId">Passed supplier id (string)</param>
+        ;;; <returns></returns>
+        public method SupplierExists, @Task<MethodStatus>
+            required in  aSupplierId, string
+            endparams
+        proc
+            data completionSource, @TaskCompletionSource<MethodStatus>, new TaskCompletionSource<MethodStatus>()
+            lambda curryParams()
+            begin
+                data result, MethodStatus, mServices.SupplierExists(aSupplierId)
+                completionSource.SetResult(result)
+            end
+            mBackgroundDispatcher.Dispatch(curryParams)
+            mreturn completionSource.Task
+        endmethod
+
+    endclass
+
+endnamespace

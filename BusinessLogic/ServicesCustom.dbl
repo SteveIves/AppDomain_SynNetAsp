@@ -1,0 +1,149 @@
+
+import System
+import System.Collections.Generic
+import System.Reflection
+import Synergex.SynergyDE.Select
+
+namespace BusinessLogic
+	
+	;;; <summary>
+	;;; This class exposes hand-crafted methods to the client application.
+	;;; Notice that this is a PARTIAL class, so the methods are added to
+	;;; the main Services class defined in Services.dbl.
+	;;; </summary>
+	public partial class Services
+		
+		.region "Constructors"
+		
+		;;; <summary>
+		;;; Constructs a new Services object.
+		;;; </summary>
+		public method Services
+			endparams
+		proc
+			data dataPath, String, string.Format("{0}\..\..\data",System.IO.Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location))
+			data status, i4
+			xcall setlog("DAT",dataPath,status)
+		endmethod
+		
+		.endregion
+		
+		.region "Login and session management"
+		
+		;;; <summary>
+		;;; Log a user in
+		;;; </summary>
+		internal method Login, MethodStatus
+			required in userName, String
+			required in password, String
+			required out message, String
+			endparams
+		proc
+			data status, MethodStatus, MethodStatus.Success
+			message = ""
+			
+			if (userName!="user"||password!="password")
+			begin
+				message = "Invalid login!"
+				status = MethodStatus.Fail
+			end
+			mreturn status
+		endmethod
+		
+		.endregion
+		
+		.region "Channel tests"
+		
+		;;; <summary>
+		;;; Test method to retrieve a collection of currently open channels.
+		;;; </summary>
+		internal method GetOpenChannels, @List<String>
+			endparams
+		proc
+			data ix, int
+			data openChannels, @List<String>, new List<String>()
+			for ix from 1 thru 1024
+				if (%chopen(ix))
+					openChannels.Add(%string(ix))
+			mreturn openChannels
+		endmethod
+		
+		;;; <summary>
+		;;; Test method to open a channel.
+		;;; </summary>
+		internal method OpenChannel, MethodStatus
+			endparams
+		proc
+			data status, MethodStatus, MethodStatus.Success
+			try
+			begin
+				data ch, i4, 0
+				open(ch,I:I,"DAT:parts.ism")
+			end
+			catch (e, @Exception)
+			begin
+				status = MethodStatus.Fail
+			end
+			endtry
+			mreturn status
+		endmethod
+		
+		;;; <summary>
+		;;; Test method to close all currently open channels.
+		;;; </summary>
+		internal method CloseAllChannels, MethodStatus
+			endparams
+		proc
+			data status, MethodStatus, MethodStatus.Success
+			try
+			begin
+				close 1 thru 1024
+			end
+			catch (e, @Exception)
+			begin
+				status = MethodStatus.Fail
+			end
+			endtry
+			mreturn status
+		endmethod
+		
+		.endregion
+		
+		.region "Custom methods"
+
+		;;; <summary>
+		;;; Get all Part records for a product group.
+		;;; </summary>
+		;;; <param name="aParts">Returned collection of Part objects (@List<Part>)</param>
+		;;; <returns></returns>
+		internal method GetProductGroupParts, MethodStatus
+			required in  aGroupId, String 
+			required out aParts, @List<Part>
+			endparams
+		proc
+			
+			data status, MethodStatus, MethodStatus.Success
+			
+			aParts = new List<Part>()
+			
+			try
+			begin
+				data rec, strPart
+				foreach rec in new Select(new From("DAT:parts.ism",rec),(Where)rec.groupid.eq.aGroupId)
+					aParts.Add(new Part(rec))
+			end
+			catch (e, @Exception)
+			begin
+				status = MethodStatus.FatalError
+			end
+			endtry
+			
+			mreturn status
+			
+		endmethod
+		
+		.endregion
+		
+	endclass
+	
+endnamespace

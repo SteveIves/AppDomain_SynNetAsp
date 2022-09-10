@@ -1,0 +1,142 @@
+;;******************************************************************************
+;;WARNING: This file was created by CodeGen. Changes will be lost if regenerated
+;;******************************************************************************
+
+import System
+import System.Collections.Generic
+import System.Threading
+import System.Threading.Tasks
+import System.Windows.Threading
+import Synergex.SynergyDE.Select
+
+namespace BusinessLogic
+
+    ;;; <summary>
+    ;;; This class exposes ASYNCHRONOUS wrappers for the CRUD methods for Part
+    ;;; to the client application. Notice that this is a PARTIAL class, so the
+    ;;; methods are added to the main AsyncServices class defined in AsyncServices.dbl.
+    ;;; </summary>
+    public partial class AsyncServices
+
+        ;;; <summary>
+        ;;; Creare a new Part record (async)
+        ;;; </summary>
+        ;;; <param name="aPart">Passed Part object (@Part)</param>
+        ;;; <returns></returns>
+        public method CreatePart, @Task<MethodStatus>
+            required in aPart, @Part
+            endparams
+        proc
+            data completionSource, @TaskCompletionSource<MethodStatus>, new TaskCompletionSource<MethodStatus>()
+            lambda curryParams()
+            begin
+                data result = mServices.CreatePart(aPart)
+                completionSource.SetResult(result)
+            end
+            mBackgroundDispatcher.Dispatch(curryParams)
+            mreturn completionSource.Task
+        endmethod
+
+        ;;; <summary>
+        ;;; Read all Part records (async)
+        ;;; </summary>
+        ;;; <returns></returns>
+        public method ReadAllParts, @Task<Tuple<MethodStatus,List<Part>>>
+            endparams
+        proc
+            data completionSource, @TaskCompletionSource<Tuple<MethodStatus,List<Part>>>, new TaskCompletionSource<Tuple<MethodStatus,List<Part>>>()
+            lambda curryParams()
+            begin
+                data aData, @List<Part>
+                data result, MethodStatus, mServices.ReadAllParts(aData)
+                completionSource.SetResult(Tuple.Create(result,aData))
+            end
+            mBackgroundDispatcher.Dispatch(curryParams)
+            mreturn completionSource.Task
+        endmethod
+
+        ;;; <summary>
+        ;;; Read a Part record by primary key (ID: primary part id) (async)
+        ;;; </summary>
+        ;;; <param name="aId">Passed part ID (String)</param>
+        ;;; <returns></returns>
+        public method ReadPart, @Task<Tuple<MethodStatus,Part,String>>
+            required in  aId, String
+            endparams
+        proc
+            data completionSource, @TaskCompletionSource<Tuple<MethodStatus,Part,String>>, new TaskCompletionSource<Tuple<MethodStatus,Part,String>>()
+            lambda curryParams()
+            begin
+                data thePart, @Part
+                data aGrfa, String
+                data result, MethodStatus, mServices.ReadPart(aId,thePart,aGrfa)
+                completionSource.SetResult(Tuple.Create(result,thePart,aGrfa))
+            end
+            mBackgroundDispatcher.Dispatch(curryParams)
+            mreturn completionSource.Task
+        endmethod
+
+        ;;; <summary>
+        ;;; Update a Part record (async)
+        ;;; </summary>
+        ;;; <param name="aPart">Passed/returned Part object (@Part)</param>
+        ;;; <param name="aGrfa">Passed/returned GRFA (string)</param>
+        ;;; <returns></returns>
+        public method UpdatePart, @Task<Tuple<MethodStatus,Part,String>>
+            required in aPart, @Part
+            required in aGrfa, String
+            endparams
+        proc
+            data completionSource, @TaskCompletionSource<Tuple<MethodStatus,Part,String>>, new TaskCompletionSource<Tuple<MethodStatus,Part,String>>()
+            data tmpData, @Part, aPart
+            data tmpGrfa, String, aGrfa
+            lambda curryParams()
+            begin
+                data result, MethodStatus, mServices.UpdatePart(tmpData,tmpGrfa)
+                completionSource.SetResult(Tuple.Create(result,tmpData,tmpGrfa))
+            end
+            mBackgroundDispatcher.Dispatch(curryParams)
+            mreturn completionSource.Task
+        endmethod
+
+        ;;; <summary>
+        ;;; Delete a Part record (async)
+        ;;; </summary>
+        ;;; <param name="aGrfa">Passed GRFA (string)</param>
+        ;;; <returns></returns>
+        public method DeletePart, @Task<MethodStatus>
+            required in aGrfa, String
+            endparams
+        proc
+            data completionSource, @TaskCompletionSource<MethodStatus>, new TaskCompletionSource<MethodStatus>()
+            lambda curryParams()
+            begin
+                data result, MethodStatus, mServices.DeletePart(aGrfa)
+                completionSource.SetResult(result)
+            end
+            mBackgroundDispatcher.Dispatch(curryParams)
+            mreturn completionSource.Task
+        endmethod
+
+        ;;; <summary>
+        ;;; Determine if a Part record exists (async)
+        ;;; </summary>
+        ;;; <param name="Id">Passed part ID (string)</param>
+        ;;; <returns></returns>
+        public method PartExists, @Task<MethodStatus>
+            required in  aId, string
+            endparams
+        proc
+            data completionSource, @TaskCompletionSource<MethodStatus>, new TaskCompletionSource<MethodStatus>()
+            lambda curryParams()
+            begin
+                data result, MethodStatus, mServices.PartExists(aId)
+                completionSource.SetResult(result)
+            end
+            mBackgroundDispatcher.Dispatch(curryParams)
+            mreturn completionSource.Task
+        endmethod
+
+    endclass
+
+endnamespace

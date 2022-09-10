@@ -1,0 +1,142 @@
+;;******************************************************************************
+;;WARNING: This file was created by CodeGen. Changes will be lost if regenerated
+;;******************************************************************************
+
+import System
+import System.Collections.Generic
+import System.Threading
+import System.Threading.Tasks
+import System.Windows.Threading
+import Synergex.SynergyDE.Select
+
+namespace BusinessLogic
+
+    ;;; <summary>
+    ;;; This class exposes ASYNCHRONOUS wrappers for the CRUD methods for ProductGroup
+    ;;; to the client application. Notice that this is a PARTIAL class, so the
+    ;;; methods are added to the main AsyncServices class defined in AsyncServices.dbl.
+    ;;; </summary>
+    public partial class AsyncServices
+
+        ;;; <summary>
+        ;;; Creare a new ProductGroup record (async)
+        ;;; </summary>
+        ;;; <param name="aProductGroup">Passed ProductGroup object (@ProductGroup)</param>
+        ;;; <returns></returns>
+        public method CreateProductGroup, @Task<MethodStatus>
+            required in aProductGroup, @ProductGroup
+            endparams
+        proc
+            data completionSource, @TaskCompletionSource<MethodStatus>, new TaskCompletionSource<MethodStatus>()
+            lambda curryParams()
+            begin
+                data result = mServices.CreateProductGroup(aProductGroup)
+                completionSource.SetResult(result)
+            end
+            mBackgroundDispatcher.Dispatch(curryParams)
+            mreturn completionSource.Task
+        endmethod
+
+        ;;; <summary>
+        ;;; Read all ProductGroup records (async)
+        ;;; </summary>
+        ;;; <returns></returns>
+        public method ReadAllProductGroups, @Task<Tuple<MethodStatus,List<ProductGroup>>>
+            endparams
+        proc
+            data completionSource, @TaskCompletionSource<Tuple<MethodStatus,List<ProductGroup>>>, new TaskCompletionSource<Tuple<MethodStatus,List<ProductGroup>>>()
+            lambda curryParams()
+            begin
+                data aData, @List<ProductGroup>
+                data result, MethodStatus, mServices.ReadAllProductGroups(aData)
+                completionSource.SetResult(Tuple.Create(result,aData))
+            end
+            mBackgroundDispatcher.Dispatch(curryParams)
+            mreturn completionSource.Task
+        endmethod
+
+        ;;; <summary>
+        ;;; Read a ProductGroup record by primary key (GROUP_ID: primary access key) (async)
+        ;;; </summary>
+        ;;; <param name="aGroupId">Passed group id (String)</param>
+        ;;; <returns></returns>
+        public method ReadProductGroup, @Task<Tuple<MethodStatus,ProductGroup,String>>
+            required in  aGroupId, String
+            endparams
+        proc
+            data completionSource, @TaskCompletionSource<Tuple<MethodStatus,ProductGroup,String>>, new TaskCompletionSource<Tuple<MethodStatus,ProductGroup,String>>()
+            lambda curryParams()
+            begin
+                data theProductGroup, @ProductGroup
+                data aGrfa, String
+                data result, MethodStatus, mServices.ReadProductGroup(aGroupId,theProductGroup,aGrfa)
+                completionSource.SetResult(Tuple.Create(result,theProductGroup,aGrfa))
+            end
+            mBackgroundDispatcher.Dispatch(curryParams)
+            mreturn completionSource.Task
+        endmethod
+
+        ;;; <summary>
+        ;;; Update a ProductGroup record (async)
+        ;;; </summary>
+        ;;; <param name="aProductGroup">Passed/returned ProductGroup object (@ProductGroup)</param>
+        ;;; <param name="aGrfa">Passed/returned GRFA (string)</param>
+        ;;; <returns></returns>
+        public method UpdateProductGroup, @Task<Tuple<MethodStatus,ProductGroup,String>>
+            required in aProductGroup, @ProductGroup
+            required in aGrfa, String
+            endparams
+        proc
+            data completionSource, @TaskCompletionSource<Tuple<MethodStatus,ProductGroup,String>>, new TaskCompletionSource<Tuple<MethodStatus,ProductGroup,String>>()
+            data tmpData, @ProductGroup, aProductGroup
+            data tmpGrfa, String, aGrfa
+            lambda curryParams()
+            begin
+                data result, MethodStatus, mServices.UpdateProductGroup(tmpData,tmpGrfa)
+                completionSource.SetResult(Tuple.Create(result,tmpData,tmpGrfa))
+            end
+            mBackgroundDispatcher.Dispatch(curryParams)
+            mreturn completionSource.Task
+        endmethod
+
+        ;;; <summary>
+        ;;; Delete a ProductGroup record (async)
+        ;;; </summary>
+        ;;; <param name="aGrfa">Passed GRFA (string)</param>
+        ;;; <returns></returns>
+        public method DeleteProductGroup, @Task<MethodStatus>
+            required in aGrfa, String
+            endparams
+        proc
+            data completionSource, @TaskCompletionSource<MethodStatus>, new TaskCompletionSource<MethodStatus>()
+            lambda curryParams()
+            begin
+                data result, MethodStatus, mServices.DeleteProductGroup(aGrfa)
+                completionSource.SetResult(result)
+            end
+            mBackgroundDispatcher.Dispatch(curryParams)
+            mreturn completionSource.Task
+        endmethod
+
+        ;;; <summary>
+        ;;; Determine if a ProductGroup record exists (async)
+        ;;; </summary>
+        ;;; <param name="GroupId">Passed group id (string)</param>
+        ;;; <returns></returns>
+        public method ProductGroupExists, @Task<MethodStatus>
+            required in  aGroupId, string
+            endparams
+        proc
+            data completionSource, @TaskCompletionSource<MethodStatus>, new TaskCompletionSource<MethodStatus>()
+            lambda curryParams()
+            begin
+                data result, MethodStatus, mServices.ProductGroupExists(aGroupId)
+                completionSource.SetResult(result)
+            end
+            mBackgroundDispatcher.Dispatch(curryParams)
+            mreturn completionSource.Task
+        endmethod
+
+    endclass
+
+endnamespace
